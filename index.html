@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <title>問卷導向中...</title>
+    <script>
+      // Google 表單連結
+      const longForm = "https://docs.google.com/forms/d/e/1FAIpQLSfclaPWex8STzajaNnjkV79upw5maJYYtlAPOFMjZ3Ra_UHIw/viewform";
+      const shortForm = "https://docs.google.com/forms/d/e/1FAIpQLSdQy9KoEh1OaJzV7PgWttS6wjCzOWFA9JWKGBVppm1-truiEw/viewform";
+
+      // 隨機導向
+      const assigned = Math.random() < 0.5 ? longForm : shortForm;
+      window.location.href = assigned;
+    </script>
+    <noscript>
+      <p>請 <a href="https://docs.google.com/forms/d/e/1FAIpQLSfclaPWex8STzajaNnjkV79upw5maJYYtlAPOFMjZ3Ra_UHIw/viewform">點此開啟問卷</a></p>
+    </noscript>
+  </head>
+  <body>
+    <p>正在導向問卷，請稍候...</p>
+  </body>
+</html>
