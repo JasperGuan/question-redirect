@@ -15,7 +15,7 @@
     const shortForm  = "https://docs.google.com/forms/d/e/1FAIpQLSdQy9KoEh1OaJzV7PgWttS6wjCzOWFA9JWKGBVppm1-truiEw/viewform";
 
     /** ③ 在網址中插入預填參數（以短影音表單的 Field ID 為例） **/
-    const FIELD_ID = "329253494";               // ← 改成你實際抄下的 ID
+    const FIELD_ID = "957856911";               // ← 改成你實際抄下的 ID
     function makeLink(form){                    // form = longForm / shortForm
       const url = new URL(form);
       url.searchParams.set("usp","pp_url");     // Google 規定要帶此參數
