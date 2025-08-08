@@ -1,22 +1,43 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
-  <head>
-    <meta charset="UTF-8" />
-    <title>問卷導向中...</title>
-    <script>
-      // Google 表單連結
-      const longForm = "https://docs.google.com/forms/d/e/1FAIpQLSfclaPWex8STzajaNnjkV79upw5maJYYtlAPOFMjZ3Ra_UHIw/viewform";
-      const shortForm = "https://docs.google.com/forms/d/e/1FAIpQLSdQy9KoEh1OaJzV7PgWttS6wjCzOWFA9JWKGBVppm1-truiEw/viewform";
+<head>
+  <meta charset="UTF-8" />
+  <title>問卷導向中…</title>
+  <script>
+    /** ① 產生唯一 Participant ID **/
+    // 新版瀏覽器可直接用 crypto.randomUUID()
+    const pid = (crypto.randomUUID ?? (() =>
+                 Date.now().toString(36)+Math.random().toString(36).slice(2)))(); // 備援方案
+    /* 參考：Codú 對 crypto.randomUUID() 的介紹  [oai_citation:2‡Codú](https://www.codu.co/articles/generating-unique-ids-in-javascript-without-a-library-iurqbbiu?utm_source=chatgpt.com) */
 
-      // 隨機導向
-      const assigned = Math.random() < 0.5 ? longForm : shortForm;
-      window.location.href = assigned;
-    </script>
-    <noscript>
-      <p>請 <a href="https://docs.google.com/forms/d/e/1FAIpQLSfclaPWex8STzajaNnjkV79upw5maJYYtlAPOFMjZ3Ra_UHIw/viewform">點此開啟問卷</a></p>
-    </noscript>
-  </head>
-  <body>
-    <p>正在導向問卷，請稍候...</p>
-  </body>
+    /** ② 定義表單基本網址 **/
+    const longForm   = "https://docs.google.com/forms/d/e/1FAIpQLSfclaPWex8STzajaNnjkV79upw5maJYYtlAPOFMjZ3Ra_UHIw/viewform";
+    const shortForm  = "https://docs.google.com/forms/d/e/1FAIpQLSdQy9KoEh1OaJzV7PgWttS6wjCzOWFA9JWKGBVppm1-truiEw/viewform";
+
+    /** ③ 在網址中插入預填參數（以短影音表單的 Field ID 為例） **/
+    const FIELD_ID = "329253494";               // ← 改成你實際抄下的 ID
+    function makeLink(form){                    // form = longForm / shortForm
+      const url = new URL(form);
+      url.searchParams.set("usp","pp_url");     // Google 規定要帶此參數
+      url.searchParams.set(`entry.${FIELD_ID}`, pid);
+      return url.toString();
+    }
+
+    /** ④ 隨機 50-50 指派組別並寫入試算表用的追蹤參數 **/
+    const group = Math.random() < 0.5 ? "LONG" : "SHORT";
+    const target = group === "LONG" ? makeLink(longForm) : makeLink(shortForm);
+
+    // ⑤ 把組別與 ID 也記在主入口表單的回應 (optional)
+    // 你可以在主入口 Apps Script 的 doPost(e) 裡加一欄 RandomGroup 寫入 {pid, group}
+
+    /** ⑥ 立即導向 **/
+    window.location.replace(target);  // 用 replace 不留歷史紀錄  [oai_citation:3‡Stack Overflow](https://stackoverflow.com/questions/200337/whats-the-best-way-to-automatically-redirect-someone-to-another-webpage?utm_source=chatgpt.com)
+  </script>
+  <noscript>
+    <p>您的瀏覽器停用 JavaScript；請手動開啟：<a href="LONG_OR_SHORT_URL">問卷連結</a></p>
+  </noscript>
+</head>
+<body>
+  <p>正在導向問卷，請稍候…</p>
+</body>
 </html>
