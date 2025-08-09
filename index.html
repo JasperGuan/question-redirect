@@ -1,47 +1,39 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <meta charset="UTF-8" />
-  <title>問卷導向中…</title>
-  <script>
-    /* ========= 0. 產生唯一 Participant ID ========= */
-    const pid = (crypto.randomUUID?.() ||
-                 Date.now().toString(36) + Math.random().toString(36).slice(2));
+<meta charset="UTF-8" />
+<title>隨機分派中…</title>
+<script>
+  // 讀回 PID（若遺失就補產生一個，避免中斷）
+  let pid = localStorage.getItem('PID');
+  if (!pid) {
+    pid = (crypto.randomUUID?.() ||
+           Date.now().toString(36)+Math.random().toString(36).slice(2));
+    localStorage.setItem('PID', pid);
+  }
 
-    /* ========= 1. 三份 Google 表單基本網址 ========= */
-    /* 主要入口（前測）如果要回寫 PID，請在 Apps Script 處理；這裡只用後測兩份 */
-    const longBase  = "https://docs.google.com/forms/d/e/1FAIpQLSfclaPWex8STzajaNnjkV79upw5maJYYtlAPOFMjZ3Ra_UHIw/viewform";
-    const shortBase = "https://docs.google.com/forms/d/e/1FAIpQLSdQy9KoEh1OaJzV7PgWttS6wjCzOWFA9JWKGBVppm1-truiEw/viewform";
+  // 後測兩份表單
+  const longBase  = "https://docs.google.com/forms/d/e/1FAIpQLSfclaPWex8STzajaNnjkV79upw5maJYYtlAPOFMjZ3Ra_UHIw/viewform";
+  const shortBase = "https://docs.google.com/forms/d/e/1FAIpQLSdQy9KoEh1OaJzV7PgWttS6wjCzOWFA9JWKGBVppm1-truiEw/viewform";
 
-    /* ========= 2. 各表單「系統識別碼」題目的 Field ID ========= */
-    const MAIN_ID   = "556587585";  // 起始問卷（僅供備用，這頁未使用）
-    const LONG_ID   = "329253494";  // 長影音組
-    const SHORT_ID  = "957856911";  // 短影音組
+  // 識別碼欄位 ID
+  const LONG_ID  = "329253494";
+  const SHORT_ID = "957856911";
 
-    /* ========= 3. 封裝成可預填的 Google Forms 連結 ========= */
-    function makePrefillLink(baseURL, fieldId, value) {
-      const url = new URL(baseURL);
-      url.searchParams.set("usp", "pp_url");           // 告訴 Google 這是預填
-      url.searchParams.set(`entry.${fieldId}`, value); // 把 PID 寫進指定欄
-      return url.toString();
-    }
+  function prefill(base, fieldId, value){
+    const url = new URL(base);
+    url.searchParams.set("usp", "pp_url");
+    url.searchParams.set(`entry.${fieldId}`, value);
+    return url.toString();
+  }
 
-    /* ========= 4. 隨機分派 50／50 ========= */
-    const targetURL = Math.random() < 0.5
-      ? makePrefillLink(longBase,  LONG_ID,  pid)      // 長影音
-      : makePrefillLink(shortBase, SHORT_ID, pid);     // 短影音
+  // 50/50 隨機分派並導向
+  const target = Math.random() < 0.5
+    ? prefill(longBase,  LONG_ID,  pid)
+    : prefill(shortBase, SHORT_ID, pid);
 
-    /* ========= 5. 立即導向（不留歷史紀錄） ========= */
-    window.location.replace(targetURL);
-  </script>
-
-  <noscript>
-    <p>您的瀏覽器停用了 JavaScript，請手動點擊
-       <a href="https://docs.google.com/forms/d/e/1FAIpQLSfclaPWex8STzajaNnjkV79upw5maJYYtlAPOFMjZ3Ra_UHIw/viewform">
-       問卷連結</a>。</p>
-  </noscript>
+  window.location.replace(target);
+</script>
 </head>
-<body>
-  <p>正在為您隨機指派組別並導向問卷，請稍候…</p>
-</body>
+<body><p>正在隨機分派並導向後續問卷…</p></body>
 </html>
